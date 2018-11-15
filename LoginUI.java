@@ -34,7 +34,7 @@ public class LoginUI extends JFrame{
         l3 = new JLabel("Password");
         tf1 = new JTextField();
         p1 = new JPasswordField();
-        login = new JButton("Login");
+        login = new JButton("Player 1 Login");
         register = new JButton("Register");
         
         l1.setBounds(100, 30, 400, 30);

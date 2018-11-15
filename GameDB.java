@@ -39,10 +39,8 @@ class GameDB {
 
    public Boolean verify(String uname, String pwd){
     try {
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/othello", username, password);
-        
+        Connection connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/othello", username, password);        
         String query = "SELECT \"Username\", \"Password\" FROM public.\"Users\" WHERE \"Username\" = '"+uname+"'";
-
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(query);
 
