@@ -206,6 +206,8 @@ public class GameGUI extends JPanel{
             
             if(e.getSource() == newGame)
             {
+                //timerP1.restart();
+                //timerP2.restart();
                 x = TWENTY_MINUTES - 1000;
                 board.reset();
                 arrOthello.clear();
