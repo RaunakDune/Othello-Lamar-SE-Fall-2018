@@ -42,8 +42,8 @@ public class LoginUI extends JFrame{
         l3.setBounds(80, 110, 200, 30);
         tf1.setBounds(300, 70, 200, 30);
         p1.setBounds(300, 110, 200, 30);
-        login.setBounds(150, 160, 100, 30);
-        register.setBounds(150, 200, 100, 30);
+        login.setBounds(150, 160, 200, 30);
+        register.setBounds(175, 200, 100, 30);
         
         frame.add(l1);
         frame.add(l2);
