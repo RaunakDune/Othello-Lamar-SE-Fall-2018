@@ -11,6 +11,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
  
 public class LoginUI extends JFrame{
     private static JLabel l1, l2, l3;
@@ -18,6 +23,7 @@ public class LoginUI extends JFrame{
     private static JButton login;
     private static JButton register;
     private static JButton results;
+    private static JButton adminPanel;
     private static JPasswordField p1;
     private static JPanel pnlLeft;
     private static JFrame mainUI;
@@ -26,6 +32,7 @@ public class LoginUI extends JFrame{
     private static JRadioButton doublePlayer;
     private static Boolean single;
     private static ButtonGroup gameType;
+    private static int time;
     
     LoginUI() {
         super("Othello: Lamar University SoftEng Fall 2018");
@@ -34,6 +41,7 @@ public class LoginUI extends JFrame{
         l1 = new JLabel("Welcome to a game of Othello!");
         l1.setForeground(Color.blue);
         l1.setFont(new Font("Serif", Font.BOLD, 20));
+        time = 1200000;
         
         l2 = new JLabel("Username");
         l3 = new JLabel("Password");
@@ -42,6 +50,7 @@ public class LoginUI extends JFrame{
         login = new JButton("Play Game?");
         register = new JButton("Register");
         results = new JButton("View Results of Matches");
+        adminPanel = new JButton("Go to Admin Panel");
         singlePlayer = new JRadioButton("Single Player");
         doublePlayer = new JRadioButton("Two Player");
         gameType = new ButtonGroup();
@@ -57,10 +66,19 @@ public class LoginUI extends JFrame{
         singlePlayer.setBounds(150, 250, 100, 30);
         doublePlayer.setBounds(150, 270, 100, 30);
         results.setBounds(175, 300, 300, 30);
+        adminPanel.setBounds(550, 200, 200, 30);
 
         gameType.add(singlePlayer);
         gameType.add(doublePlayer);
         singlePlayer.setSelected(true);
+
+        ImageIcon i = new ImageIcon("images/board.jpg");
+        JLabel l = new JLabel();
+        l.setIcon(i);        
+        JPanel p = new JPanel();
+        p.add(l);
+
+        frame.add(p);
         
         frame.add(l1);
         frame.add(l2);
@@ -70,16 +88,20 @@ public class LoginUI extends JFrame{
         frame.add(login);
         frame.add(register);
         frame.add(results);
+        frame.add(adminPanel);
         frame.add(singlePlayer);
         frame.add(doublePlayer);
 
         login.addActionListener(new Action());
         register.addActionListener(new Action());
         results.addActionListener(new Action());
+        adminPanel.addActionListener(new Action());
+        
         
         frame.setSize(800, 800);
         frame.setLayout(null);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
@@ -113,12 +135,12 @@ public class LoginUI extends JFrame{
                     
                     if (single){
                         String player1 = JOptionPane.showInputDialog("Player 1 Name?");
-                        pnlLeft = new AIGUI(player1);
+                        pnlLeft = new AIGUI(player1, time);
                     }
                     else{
                         String player1 = JOptionPane.showInputDialog("Player 1 Name?");
                         String player2 = JOptionPane.showInputDialog("Player 2 Name?");
-                        pnlLeft = new GameGUI(player1, player2);
+                        pnlLeft = new GameGUI(player1, player2, time);
                     }
                     mainUI.add(pnlLeft, BorderLayout.CENTER);
                     
@@ -163,6 +185,18 @@ public class LoginUI extends JFrame{
                 mainUI.setVisible(true);
 
                 
+            }
+            else if (e.getSource() == adminPanel){
+                GameDB gdb = new GameDB();
+                String uname = tf1.getText();
+                String pass = p1.getText();
+                if (uname.equals("admin") == true && gdb.verify(uname, pass)){
+                    String timeString = JOptionPane.showInputDialog("Set Time Limit Value:");
+                    time = Integer.parseInt(timeString) * 1000;
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,"Incorrect admin credentials","Error",JOptionPane.ERROR_MESSAGE); 
+                }                
             }
         }
     }

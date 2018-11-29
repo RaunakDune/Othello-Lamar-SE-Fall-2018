@@ -25,7 +25,7 @@ public class GameGUI extends JPanel{
     static JLabel score2;
     static Timer player1Timer;
     static Timer player2Timer;
-    static long TWENTY_MINUTES = 1200000;
+    static long TIME_MIN = 1200000;
     static java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("mm : ss");
     static JLabel timer1;
     static JLabel timer2;
@@ -42,19 +42,22 @@ public class GameGUI extends JPanel{
     static public int player1Score = 2; 
     static public int player2Score = 2;
     static public int currentPlayer = 1;
-    static long x = TWENTY_MINUTES - 1000;
+    static long x;
     private static Game start;
     private static int rows = 8;
     private static int cols = 8;
     private static Color col = new Color(57, 160, 51);
     
   
-    public GameGUI(String p1, String p2)
+    public GameGUI(String p1, String p2, int time)
     {
         super(new BorderLayout());    
         setPreferredSize(new Dimension(1000,900));
         setLocation(0, 0);        
         mainUI = new JFrame("Othello: Lamar University SoftEng Fall 2018");
+
+        TIME_MIN = time;
+        x = TIME_MIN - 1000;
         
         board = new Game();
         start = board;
@@ -148,13 +151,27 @@ public class GameGUI extends JPanel{
         score1 = new JLabel();
         score1.setText(player1+" : " + player1Score + "  ");
         score1.setFont(new Font("Serif", Font.BOLD, 22));
-        timer1 = new JLabel(sdf.format(new Date(TWENTY_MINUTES)),JLabel.CENTER);
+        timer1 = new JLabel(sdf.format(new Date(TIME_MIN)),JLabel.CENTER);
 
         timerP1 = new Timer(1000, new ActionListener(){
-            long tick = TWENTY_MINUTES - 1000;
+            long tick = TIME_MIN - 1000;
             public void actionPerformed(ActionEvent ae){
                 timer1.setText(sdf.format(new Date(tick)));
                 tick -= 1000;
+
+                if (tick <= 0){
+                    tick = 5000000;
+                    GameDB gdb = new GameDB();
+                    gdb.submit(player1, player2, player1Score, player2Score);
+                    if(player1Score > player2Score){ 
+                        JOptionPane.showMessageDialog(null,"You've Run out of Time!\n"+player1+" wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player1);  
+                    } 
+                    else{
+                        JOptionPane.showMessageDialog(null,"You've run out of Time!\n"+player2+" wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player1);
+                    }
+                }
             }
         });
 
@@ -162,10 +179,10 @@ public class GameGUI extends JPanel{
         score2 = new JLabel();   
         score2.setText(player2+" : "  + player2Score + "  ");
         score2.setFont(new Font("Serif", Font.BOLD, 22));
-        timer2 = new JLabel(sdf.format(new Date(TWENTY_MINUTES)),JLabel.CENTER);
+        timer2 = new JLabel(sdf.format(new Date(TIME_MIN)),JLabel.CENTER);
         
         timerP2 = new Timer(1000, new ActionListener(){
-            long tick = TWENTY_MINUTES - 1000;
+            long tick = TIME_MIN - 1000;
             public void actionPerformed(ActionEvent ae){
                 timer2.setText(sdf.format(new Date(tick)));
                 tick -= 1000;
@@ -216,7 +233,7 @@ public class GameGUI extends JPanel{
             {
                 //timerP1.restart();
                 //timerP2.restart();
-                x = TWENTY_MINUTES - 1000;
+                x = TIME_MIN - 1000;
                 board.reset();
                 arrOthello.clear();
                 arrOthello.add(new Game(start));
