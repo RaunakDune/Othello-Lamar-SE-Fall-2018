@@ -361,8 +361,7 @@ public class AIGUI extends JPanel{
                 if(st == 0)
                 {
                     gdb.submit(player1, "Computer", player1Score, player2Score);
-                    if(player1Score > player2Score){   
-                                             
+                    if(player1Score > player2Score){ 
                         JOptionPane.showMessageDialog(null,"No legal moves remain.\n"+player1+" wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
                         goToPostgame(player1);  
                     } 
@@ -393,7 +392,7 @@ public class AIGUI extends JPanel{
 
     static void goToPostgame(String p1){
         int dialogButton = JOptionPane.YES_NO_OPTION;
-        int dialogResult = JOptionPane.showConfirmDialog (null, "Would You Like to View the List of Results?","Warning",dialogButton);
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Would You Like to View your List of Results,"+p1+" ?","Warning",dialogButton);
         if(dialogResult == JOptionPane.YES_OPTION){
             mainUI.setLayout(new BorderLayout());
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

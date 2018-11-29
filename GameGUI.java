@@ -20,7 +20,7 @@ public class GameGUI extends JPanel{
     JPanel panel;
     JPanel boardPanel;
     private static JFrame mainUI;
-    
+
     static JLabel score1;
     static JLabel score2;
     static Timer player1Timer;
@@ -389,29 +389,59 @@ public class GameGUI extends JPanel{
                     }
 
                 }
-                int st = board.endOfGame();
+                int st = board.endOfGame();                
+                GameDB gdb = new GameDB();
                 if(st == 0)
                 {
-                    if(player1Score > player2Score)
-                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player1 + " : wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);   
-                    else
-                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player2 + "wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    gdb.submit(player1, player2, player1Score, player2Score);
+                    if(player1Score > player2Score){
+                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player1 + " : wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player1);  
+                    }  
+                    else{
+                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player2 + " : wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player2); 
+                    }
                 }
-                else if(st == 1 || st == 3)
-                {
+                else if(st == 1 || st == 3){
+                    gdb.submit(player1, player2, player1Score, player2Score);
                     JOptionPane.showMessageDialog(null,player2 + " Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    goToPostgame(player2); 
                 }
-                else if(st == 2 || st == 4)
-                {
-                    JOptionPane.showMessageDialog(null,player1 + " Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE); 
+                else if(st == 2 || st == 4){
+                    gdb.submit(player1, player2, player1Score, player2Score);
+                    JOptionPane.showMessageDialog(null,player1 + " Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    goToPostgame(player1);  
                 }
-                else if(st == 3)
-                {
+                else if(st == 3){
                     JOptionPane.showMessageDialog(null,"Invalid Score","Game Over",JOptionPane.WARNING_MESSAGE); 
                 }
             }
         }
         
+    }
+
+    static void goToPostgame(String p1){
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Would You Like to View your List of Results,"+p1+" ?","Warning",dialogButton);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            mainUI.setLayout(new BorderLayout());
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int height = screenSize.height;
+            int width = screenSize.width;
+            mainUI.setSize(width/2, height/2);
+            mainUI.setLocationRelativeTo(null);
+
+            mainUI.add(new PostgameUI(p1));
+                
+            mainUI.setSize(800, 800);
+            mainUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainUI.setResizable(false);
+            mainUI.setVisible(true);
+        }
+        else{
+            return;
+        }
     }
     
 }

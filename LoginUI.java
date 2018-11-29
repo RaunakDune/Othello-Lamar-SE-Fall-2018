@@ -31,7 +31,7 @@ public class LoginUI extends JFrame{
         super("Othello: Lamar University SoftEng Fall 2018");
         frame = new JFrame("Othello: Lamar University SoftEng Fall 2018");
         mainUI = new JFrame("Othello: Lamar University SoftEng Fall 2018");
-        l1 = new JLabel("Login Form");
+        l1 = new JLabel("Welcome to a game of Othello!");
         l1.setForeground(Color.blue);
         l1.setFont(new Font("Serif", Font.BOLD, 20));
         
@@ -39,7 +39,7 @@ public class LoginUI extends JFrame{
         l3 = new JLabel("Password");
         tf1 = new JTextField();
         p1 = new JPasswordField();
-        login = new JButton("Welcome to a game of Othello!");
+        login = new JButton("Play Game?");
         register = new JButton("Register");
         results = new JButton("View Results of Matches");
         singlePlayer = new JRadioButton("Single Player");
