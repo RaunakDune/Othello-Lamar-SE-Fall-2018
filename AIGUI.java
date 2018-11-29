@@ -10,17 +10,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.border.TitledBorder;
+
+import othello.Game;
+
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 import java.awt.event.*;
 import java.util.Date;
 
-public class GameGUI extends JPanel{
+public class AIGUI extends JPanel{
 
     JPanel panel;
-    JPanel boardPanel;
+    JPanel boardPanel;    
     private static JFrame mainUI;
-    
+
     static JLabel score1;
     static JLabel score2;
     static Timer player1Timer;
@@ -28,20 +31,15 @@ public class GameGUI extends JPanel{
     static long TWENTY_MINUTES = 1200000;
     static java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("mm : ss");
     static JLabel timer1;
-    static JLabel timer2;
     static Timer timerP1;
-    static Timer timerP2;
+    static String player1;
     static JButton newGame;
     static JButton [] cell;
     static Game board;
     static ArrayList<Game>  arrOthello= new ArrayList<Game>();
     
-    static String player1;
-    static String player2;
-    
     static public int player1Score = 2; 
     static public int player2Score = 2;
-    static public int currentPlayer = 1;
     static long x = TWENTY_MINUTES - 1000;
     private static Game start;
     private static int rows = 8;
@@ -49,7 +47,7 @@ public class GameGUI extends JPanel{
     private static Color col = new Color(57, 160, 51);
     
   
-    public GameGUI(String p1, String p2)
+    public AIGUI(String playerName)
     {
         super(new BorderLayout());    
         setPreferredSize(new Dimension(1000,900));
@@ -58,9 +56,8 @@ public class GameGUI extends JPanel{
         
         board = new Game();
         start = board;
+        player1 = playerName;
         arrOthello.add(new Game(board));
-        player1 = p1;
-        player2 = p2;
 
         panel = new JPanel();
         panel.setPreferredSize(new Dimension(800,60));
@@ -146,7 +143,7 @@ public class GameGUI extends JPanel{
             light.setIcon(new ImageIcon(img));
         } catch (IOException ex) {}
         score1 = new JLabel();
-        score1.setText(player1+" : " + player1Score + "  ");
+        score1.setText(player1 +" : " + player1Score + "  ");
         score1.setFont(new Font("Serif", Font.BOLD, 22));
         timer1 = new JLabel(sdf.format(new Date(TWENTY_MINUTES)),JLabel.CENTER);
 
@@ -160,17 +157,9 @@ public class GameGUI extends JPanel{
 
         
         score2 = new JLabel();   
-        score2.setText(player2+" : "  + player2Score + "  ");
+        score2.setText(" Computer: " + player2Score + "  ");
         score2.setFont(new Font("Serif", Font.BOLD, 22));
-        timer2 = new JLabel(sdf.format(new Date(TWENTY_MINUTES)),JLabel.CENTER);
-        
-        timerP2 = new Timer(1000, new ActionListener(){
-            long tick = TWENTY_MINUTES - 1000;
-            public void actionPerformed(ActionEvent ae){
-                timer2.setText(sdf.format(new Date(tick)));
-                tick -= 1000;
-            }
-        });
+
                
         c.gridx = 0;
         c.gridy = 1;
@@ -199,7 +188,6 @@ public class GameGUI extends JPanel{
         scorePanel.add(light, c);  
         c.gridx = 1;
         c.gridy = 4;
-        scorePanel.add(timer2,c);
               
         add(scorePanel, BorderLayout.EAST);        
     }
@@ -255,8 +243,8 @@ public class GameGUI extends JPanel{
                     }
                 }
                 player1Score = 2; player2Score = 2;
-                score1.setText(player1+" : "  + player1Score + "  ");
-                score2.setText(player2+" : "  + player2Score + "  ");
+                score1.setText(player1 +" : " + player1Score + "  ");
+                score2.setText(" Computer : " + player2Score + "  ");
             }
             else
             {
@@ -266,7 +254,7 @@ public class GameGUI extends JPanel{
                     if(e.getSource() == cell[i])  
                     {
                         int xCor, yCor;
-                        int ctBlack = -100, ctWhite = -100, point;
+                        int ctBlack = -100, point;
                         int arr[] = new int[3];
                         if(i==0)
                         {
@@ -278,16 +266,11 @@ public class GameGUI extends JPanel{
                             yCor =i%8;
                             xCor =i/8;
                         }
-
-                        if (ctBlack == -1 && ctWhite == -1)
-                            break;
-                        
-                        if  (currentPlayer == 1){
+                        ctBlack = board.playBlack(xCor, yCor);
+                        if(ctBlack == 0)
+                        {
                             timerP1.stop();
-                            timerP2.start();
-                            ctBlack = board.playBlack(xCor, yCor);                            
                             arrOthello.add(new Game(board));
-                            ArrayList <Integer> arrList = new ArrayList <Integer>();
                             int k=0;
                             for(int row = 0; row < rows; row++) 
                             {
@@ -312,31 +295,15 @@ public class GameGUI extends JPanel{
                                     k++;
                                 }
                             }
-
-                            board.findValidMovesWhite(arrList);
-                            for (int j = 0; j < arrList.size(); j += 2) 
-                            {
-                                try 
-                                {
-                                    Image img = ImageIO.read(getClass().getResource("images/legalMoveIconWhite.png"));
-                                    cell[arrList.get(j)*rows + arrList.get(j + 1)].setIcon(new ImageIcon(img));
-                                } catch (IOException ex) {}  
-                            }
-                            
                             board.calculateScore(arr);
                             player1Score = arr[0]; player2Score = arr[1]; point = arr[2];
-                            score1.setText(player1+" : " + player1Score + "  ");
-                            score2.setText(player2+" : " + player2Score + "  ");
-
-                            currentPlayer = 2;
-                            
-                        }                            
-                        
-                        else if(currentPlayer == 2 || ctBlack == 0 || ctBlack == -1)
+                            score1.setText(player1 +" : " + player1Score + "  ");
+                            score2.setText("Computer : " + player2Score + "  "); 
+                        }
+                        if(ctBlack == 0 || ctBlack == -1)
                         {    
-                            timerP2.stop();
                             timerP1.start();
-                            ctWhite = board.playWhite(xCor, yCor);
+                            board.playComputer();
                             arrOthello.add(new Game(board));
                             ArrayList <Integer> arrList = new ArrayList <Integer>();
                             int k=0;
@@ -378,40 +345,73 @@ public class GameGUI extends JPanel{
                             }
                             board.calculateScore(arr);
                             player1Score = arr[0]; player2Score = arr[1]; point = arr[2];
-                            score1.setText(player1+" : " + player1Score + "  ");
-                            score2.setText(player2+" : " + player2Score + "  ");
-                            
-                            currentPlayer = 1;
-                            
+                            score1.setText(player1 +" : " + player1Score + "  ");
+                            score2.setText("Computer : " + player2Score + "  ");  
                         }
-                        if (timerP1.isRunning() == false || timerP2.isRunning() == false)
+
+                        
+                        if (timerP1.isRunning() == false)
                             break;
                     }
 
                 }
                 int st = board.endOfGame();
+                GameDB gdb = new GameDB();
+                
                 if(st == 0)
                 {
-                    if(player1Score > player2Score)
-                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player1 + " : wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);   
-                    else
-                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n" + player2 + "wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    gdb.submit(player1, "Computer", player1Score, player2Score);
+                    if(player1Score > player2Score){   
+                                             
+                        JOptionPane.showMessageDialog(null,"No legal moves remain.\n"+player1+" wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player1);  
+                    } 
+                    else{
+                        JOptionPane.showMessageDialog(null,"No legal moves remain.\nComputer wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                        goToPostgame(player1);
+                    }
                 }
-                else if(st == 1 || st == 3)
-                {
-                    JOptionPane.showMessageDialog(null,player2 + " Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                else if(st == 1 || st == 3){
+                    gdb.submit(player1, "Computer", player1Score, player2Score);
+                    JOptionPane.showMessageDialog(null,"Computer Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    goToPostgame(player1);
                 }
-                else if(st == 2 || st == 4)
-                {
-                    JOptionPane.showMessageDialog(null,player1 + " Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE); 
+                else if(st == 2 || st == 4){
+                    gdb.submit(player1, "Computer", player1Score, player2Score);
+                    JOptionPane.showMessageDialog(null,player1+" Wins!","Game Over",JOptionPane.INFORMATION_MESSAGE);
+                    goToPostgame(player1); 
                 }
-                else if(st == 3)
-                {
-                    JOptionPane.showMessageDialog(null,"Invalid Score","Game Over",JOptionPane.WARNING_MESSAGE); 
+                else if(st == 3){
+                    gdb.submit(player1, "Computer", player1Score, player2Score);
+                    JOptionPane.showMessageDialog(null,"Invalid Score","Game Over",JOptionPane.WARNING_MESSAGE);
+                    goToPostgame(player1); 
                 }
             }
         }
         
+    }
+
+    static void goToPostgame(String p1){
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Would You Like to View the List of Results?","Warning",dialogButton);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            mainUI.setLayout(new BorderLayout());
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int height = screenSize.height;
+            int width = screenSize.width;
+            mainUI.setSize(width/2, height/2);
+            mainUI.setLocationRelativeTo(null);
+
+            mainUI.add(new PostgameUI(p1));
+                
+            mainUI.setSize(800, 800);
+            mainUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainUI.setResizable(false);
+            mainUI.setVisible(true);
+        }
+        else{
+            return;
+        }
     }
     
 }
